@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Turbo Web · 浏览器端验证</title>
+<style>
+  body { background:#0d1017; color:#e6ecff; font:14px/1.7 ui-monospace, Consolas, monospace; padding:20px; }
+  pre { white-space:pre-wrap; }
+  .ok { color:#4ade80; } .bad { color:#f87171; }
+</style>
+</head>
+<body>
+<h3>Turbo Web 浏览器端加速验证</h3>
+<pre id="out">running…</pre>
+
+<!-- 劫持前保存原生引用，用于取得「真实时间」基准 -->
+<script>
+  window.__nativeNow = performance.now.bind(performance);
+  window.__nativeSetTimeout = window.setTimeout.bind(window);
+</script>
+
+<!-- 加速引擎（与扩展注入的代码完全一致） -->
+<script src="../../src/inject.js"></script>
+
+<script>
+(function () {
+  var logs = [];
+  function log(s) { logs.push(s); }
+
+  var paint = function () { document.getElementById('out').textContent = logs.join('\n'); };
+
+  // 与扩展下发配置的结构完全一致
+  window.postMessage({
+    __turbo: true, type: 'apply',
+    settings: {
+      speed: 4, enabled: true, raf: true, timers: true,
+      animations: true, media: true, keepPitch: true,
+      smil: false, frameRepeat: false, dateNow: false
+    }
+  }, '*');
+
+  log('引擎已安装: ' + (window.__turboEngine ? 'yes' : 'NO'));
+  log('performance.now 已被替换: ' + (performance.now !== window.__nativeNow ? 'yes' : 'NO'));
+
+  var t0n = window.__nativeNow();
+  var t0v = performance.now();
+
+  var ticks = 0;
+  setInterval(function () { ticks++; }, 100);   // 加速后应约 40 次/秒
+
+  var frames = 0;
+  var loop = function () { frames++; requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+
+  // CSS 动画：观察 playbackRate 是否被接管
+  var box = document.createElement('div');
+  box.style.cssText = 'width:20px;height:20px;background:#f43f5e;animation:spin 1s linear infinite';
+  var style = document.createElement('style');
+  style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+  document.head.appendChild(style);
+  document.body.appendChild(box);
+
+  var t1n = window.__nativeNow();
+  var t1v = performance.now();
+
+  window.__nativeSetTimeout(function () {
+    var dn = window.__nativeNow() - t0n;
+    var dv = performance.now() - t0v;
+    var ratio = dv / dn;
+    var rate = window.__turboEngine.settings.speed;
+
+    var anims = document.getAnimations ? document.getAnimations() : [];
+    var rates = anims.map(function (a) { return a.playbackRate; });
+
+    log('');
+    log('设置倍率          : ' + rate + 'x');
+    log('真实耗时          : ' + dn.toFixed(1) + ' ms');
+    log('虚拟时间推进      : ' + dv.toFixed(1) + ' ms');
+    log('实测时间加速比    : ' + ratio.toFixed(2) + '  → ' + (Math.abs(ratio - 4) < 0.5 ? 'PASS' : 'FAIL'));
+    log('setInterval 触发  : ' + ticks + ' 次（100ms 间隔，4x 下约 ' + Math.round(dn / 25) + ' 次）→ '
+        + (ticks >= dn / 40 && ticks <= dn / 12 ? 'PASS' : 'FAIL'));
+    log('rAF 帧数          : ' + frames);
+    log('动画 playbackRate : [' + rates.join(', ') + '] → '
+        + (rates.length && rates.every(function (r) { return r === 4; }) ? 'PASS' : 'FAIL'));
+    log('');
+    log('加速瞬间虚拟时间连续: ' + ((t1v - t0v) >= 0 ? 'PASS' : 'FAIL'));
+
+    var verdict = logs.join(' ').indexOf('FAIL') === -1;
+    log('');
+    log(verdict ? '=== 全部通过 ===' : '=== 存在失败项 ===');
+    paint();
+  }, 800);
+
+  window.__nativeSetTimeout(paint, 300);
+})();
+</script>
+</body>
+</html>

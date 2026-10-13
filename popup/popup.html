@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turbo Web 网页加速</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app">
+  <header class="head">
+    <div class="brand">
+      <img class="logo" src="../icons/icon48.png" alt="">
+      <div class="brand-text">
+        <h1>Turbo Web</h1>
+        <p id="site" class="site">正在读取当前站点…</p>
+      </div>
+    </div>
+    <button id="power" class="power" type="button" title="开启 / 暂停加速">
+      <span class="power-dot"></span>
+    </button>
+  </header>
+
+  <section class="hero">
+    <div class="value">
+      <span id="val">1</span><span class="unit">x</span>
+    </div>
+    <div id="stateHint" class="hint">原始速度</div>
+  </section>
+
+  <section class="slider-wrap">
+    <input id="slider" class="slider" type="range" min="0" max="1000" step="1" value="453" aria-label="速度">
+    <div class="scale">
+      <span>0.1x</span><span class="mid">1x</span><span>16x</span>
+    </div>
+  </section>
+
+  <section class="presets" id="presets"></section>
+
+  <section class="actions">
+    <button id="btnReset" class="ghost" type="button">恢复 1x</button>
+    <button id="btnPause" class="ghost" type="button">暂停加速</button>
+    <button id="btnSiteOff" class="ghost" type="button">本站禁用</button>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">加速范围</div>
+    <label class="row">
+      <span class="row-label">JS 动画与时间轴
+        <em>requestAnimationFrame / performance.now</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="raf"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">CSS 动画与过渡
+        <em>animation / transition / WAAPI</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="animations"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">视频与音频
+        <em>playbackRate，最高 16x</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="media"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">页面定时器
+        <em>setTimeout / setInterval</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="timers"><i></i></span>
+    </label>
+  </section>
+
+  <details class="panel advanced">
+    <summary class="panel-title">高级选项</summary>
+    <label class="row">
+      <span class="row-label">页面内悬浮控制器
+        <em>手机上用它调速，可拖动位置</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="floating"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">变速不变调
+        <em>媒体保持原始音调</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="keepPitch"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">按站点分别记忆
+        <em>每个网站独立保存速度</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="perSite"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">SVG SMIL 动画
+        <em>部分老式矢量动画</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="smil"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">逐帧重复模式
+        <em>兼容按帧步进的旧动画，可能过量加速</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="frameRepeat"><i></i></span>
+    </label>
+    <label class="row">
+      <span class="row-label">改写 Date.now
+        <em>少数依赖系统时间的动画，副作用较大</em>
+      </span>
+      <span class="switch"><input type="checkbox" data-key="dateNow"><i></i></span>
+    </label>
+  </details>
+
+  <footer class="foot">
+    <span class="keys">
+      <kbd>Alt</kbd>+<kbd>,</kbd> 减慢
+      <kbd>Alt</kbd>+<kbd>.</kbd> 加快
+      <kbd>Alt</kbd>+<kbd>X</kbd> 暂停
+    </span>
+    <a id="linkShortcuts" class="link" href="#">改快捷键</a>
+  </footer>
+</div>
+
+<script src="../src/shared.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

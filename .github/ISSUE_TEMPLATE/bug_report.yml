@@ -1,0 +1,85 @@
+name: Bug 报告
+description: 报告一个可复现的问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先搜索现有 issue，避免重复。
+        涉及加速失效的问题，请附 `chrome://extensions` 页面上的错误信息，或页面控制台的报错。
+
+  - type: textarea
+    id: describe
+    attributes:
+      label: 问题描述
+      description: 发生了什么？期望的行为是什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      description: 在哪个网站上、做了什么操作、用了什么倍率
+      placeholder: |
+        1. 打开 https://example.com
+        2. 设置为 4x
+        3. 点击播放……
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 扩展版本
+      placeholder: v1.1.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: 浏览器 / 内核版本
+      options:
+        - Chrome（请填写版本）
+        - Edge（请填写版本）
+        - 狐猴浏览器 Lemur（Chromium 107）
+        - 其他 Chromium 内核浏览器（请说明）
+    validations:
+      required: true
+
+  - type: dropdown
+    id: engine
+    attributes:
+      label: 引擎模式
+      description: 悬浮控制器上显示的「主世界 / DOM 降级」，或弹窗里的状态
+      options:
+        - 主世界（完整加速）
+        - DOM 降级（有限加速）
+        - 不确定 / 未显示
+
+  - type: checkboxes
+    id: targets
+    attributes:
+      label: 哪些加速对象失效了
+      options:
+        - CSS 动画 / transition
+        - JS requestAnimationFrame 动画
+        - setTimeout / setInterval
+        - video / audio
+        - SVG 动画
+        - 全部 / 不确定
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 报错信息
+      description: 控制台或 chrome://extensions 里的错误，请完整粘贴
+      render: shell
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 截图、录屏、页面 URL 等

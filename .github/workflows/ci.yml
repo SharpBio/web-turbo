@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Syntax check & engine unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax check all JS sources
+        run: |
+          for f in src/*.js popup/*.js tools/*.js tools/verify/*.js; do
+            node --check "$f"
+          done
+
+      - name: Run engine unit tests
+        run: node tools/engine.test.js
+
+  build:
+    name: Package & artifact verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate ephemeral key (never committed)
+        run: |
+          node tools/build.js --ephemeral-key
+          test -f dist/web-turbo-*.zip
+          test -f dist/web-turbo-*.crx
+
+      - name: Verify ZIP structure
+        run: |
+          node -e "
+            const {execSync} = require('child_process');
+            const fs = require('fs');
+            const zip = fs.readdirSync('dist').find(f => f.endsWith('.zip'));
+            const out = execSync('unzip -l dist/' + zip).toString();
+            const required = ['manifest.json','src/inject.js','src/content.js','src/fallback.js','src/floating.js','src/shared.js','popup/popup.html','popup/popup.js','popup/popup.css'];
+            const missing = required.filter(f => !out.includes(f));
+            if (missing.length) { console.error('Missing entries: ' + missing.join(', ')); process.exit(1); }
+            console.log('ZIP structure OK');
+          "
+
+      - name: Verify CRX3 magic & version
+        run: |
+          node -e "
+            const fs = require('fs');
+            const crx = fs.readdirSync('dist').find(f => f.endsWith('.crx'));
+            const buf = fs.readFileSync('dist/' + crx);
+            if (buf.toString('latin1', 0, 4) !== 'Cr24') { console.error('Bad CRX magic'); process.exit(1); }
+            const version = buf.readUInt32LE(4);
+            if (version !== 3) { console.error('Unsupported CRX version: ' + version); process.exit(1); }
+            console.log('CRX3 magic OK, size=' + buf.length + ' bytes');
+          "
+
+      - name: Secret scan (must be empty)
+        run: |
+          ! grep -rIl --exclude-dir=.git --exclude-dir=dist \
+            -e "BEGIN RSA PRIVATE KEY" -e "BEGIN PRIVATE KEY" . \
+            || { echo "::error::Private key material found in tracked files"; exit 1; }

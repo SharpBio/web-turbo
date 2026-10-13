@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Turbo Web 网页全局加速",
+  "version": "1.1.0",
+  "description": "给整个网页加速：CSS 动画、JS 动画、视频音频、页面定时器，速度 0.1x ~ 16x 自由调节。",
+  "minimum_chrome_version": "88",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "action": {
+    "default_title": "Turbo Web 网页加速",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/shared.js", "src/floating.js", "src/fallback.js", "src/content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/inject.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "commands": {
+    "turbo-up": {
+      "suggested_key": { "default": "Alt+Period" },
+      "description": "提高加速倍率"
+    },
+    "turbo-down": {
+      "suggested_key": { "default": "Alt+Comma" },
+      "description": "降低加速倍率"
+    },
+    "turbo-toggle": {
+      "suggested_key": { "default": "Alt+X" },
+      "description": "开启 / 暂停加速"
+    },
+    "turbo-reset": {
+      "suggested_key": { "default": "Alt+Shift+X" },
+      "description": "恢复原始速度 1x"
+    }
+  }
+}

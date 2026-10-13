@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Turbo Web · 严格 CSP 注入验证</title>
+<style>
+  body { background:#0d1017; color:#e6ecff; font:14px/1.7 ui-monospace, Consolas, monospace; padding:20px; }
+  pre { white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<h3>严格 CSP 站点下的主世界注入验证</h3>
+<pre id="out">running…</pre>
+<!-- 本页没有任何内联脚本：所有逻辑都在同源码文件里，
+     由带 Content-Security-Policy: script-src 'self' 的服务器提供 -->
+<script src="csp.js"></script>
+</body>
+</html>

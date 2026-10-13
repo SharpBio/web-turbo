@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turbo Web · 效果演示</title>
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title">
+      <h1>Turbo Web 效果演示</h1>
+      <p>下面所有动画（CSS / JS 帧循环 / 定时器 / Web Animations）都会随倍率同步变化</p>
+    </div>
+    <div class="speed-badge">
+      <span id="speedVal">1</span><span class="u">x</span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <input id="slider" type="range" min="0" max="1000" step="1" value="453">
+    <div class="chips" id="chips"></div>
+    <button id="toggle" class="btn">暂停加速</button>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>CSS animation</h2>
+      <div class="stage">
+        <div class="spin"></div>
+        <div class="pulse"></div>
+      </div>
+      <p class="note">旋转 + 呼吸，由 CSS keyframes 驱动</p>
+    </section>
+
+    <section class="card">
+      <h2>CSS transition</h2>
+      <div class="stage">
+        <div id="track" class="track"><div id="ball" class="ball"></div></div>
+      </div>
+      <button id="goBtn" class="btn small">来回切换</button>
+      <p class="note">transition 1.2s，加速后明显变快</p>
+    </section>
+
+    <section class="card">
+      <h2>JS requestAnimationFrame</h2>
+      <div class="stage">
+        <canvas id="cv" width="440" height="150"></canvas>
+      </div>
+      <p class="note">基于时间戳差值的物理运动</p>
+    </section>
+
+    <section class="card">
+      <h2>setInterval 计时</h2>
+      <div class="stage">
+        <div class="counter"><span id="tick">0</span><em>次 / 每 1 秒</em></div>
+      </div>
+      <p class="note">定时器延迟按倍率压缩</p>
+    </section>
+
+    <section class="card">
+      <h2>Web Animations API</h2>
+      <div class="stage">
+        <div id="waapi" class="waapi"></div>
+      </div>
+      <p class="note">element.animate() 创建的动画</p>
+    </section>
+
+    <section class="card">
+      <h2>SVG SMIL</h2>
+      <div class="stage">
+        <svg width="200" height="110" viewBox="0 0 200 110">
+          <circle cx="20" cy="55" r="12" fill="#67e8f9">
+            <animate attributeName="cx" values="20;180;20" dur="2s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <p class="note">需在插件里开启「SVG SMIL」选项</p>
+    </section>
+  </div>
+
+  <footer class="foot">
+    这是插件的功能演示页：安装扩展后，在任何网页点扩展图标也能得到同样的效果。
+  </footer>
+</div>
+
+<script src="../src/shared.js"></script>
+<script src="../src/inject.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>

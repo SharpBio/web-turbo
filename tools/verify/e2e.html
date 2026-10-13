@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>Turbo Web · 端到端检查</title>
+<style>body{background:#0d1017;color:#e6ecff;font:14px/1.7 ui-monospace,Consolas,monospace;padding:20px}
+pre{white-space:pre-wrap}#r{color:#4ade80}</style>
+</head>
+<body>
+<h3>扩展注入端到端检查</h3>
+<pre id="r">checking…</pre>
+<script>
+  setTimeout(function () {
+    var cache = null;
+    try { cache = localStorage.getItem('__turboCache'); } catch (e) {}
+    var result = {
+      '主世界引擎已注入': !!window.__turboEngine,
+      '引擎当前倍率': window.__turboEngine ? window.__turboEngine.settings.speed : null,
+      'performance.now 已被劫持': performance.now.toString().indexOf('native code') === -1,
+      '隔离世界桥接缓存已写入': !!cache,
+      '缓存内容倍率': cache ? JSON.parse(cache).speed : null,
+      '缓存内容加速开关': cache ? JSON.parse(cache).enabled : null
+    };
+    var pass = result['主世界引擎已注入'] && result['performance.now 已被劫持']
+            && result['隔离世界桥接缓存已写入'];
+    var out = Object.keys(result).map(function (k) {
+      return k.padEnd(26, ' ') + ': ' + result[k];
+    }).join('\n');
+    document.getElementById('r').textContent = out + '\n\n=== ' + (pass ? '端到端 PASS' : '端到端 FAIL') + ' ===';
+  }, 600);
+</script>
+</body>
+</html>
