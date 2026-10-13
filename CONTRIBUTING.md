@@ -79,8 +79,11 @@ test: 补充倍率为 0 时的媒体钳制用例
 
 ```bash
 git status --porcelain          # 不应出现 .pem
-git diff --cached | grep -i "BEGIN PRIVATE KEY"   # 应无输出
+git diff --cached | grep -e "-----BEGIN.*PRIVATE KEY-----"   # 应无输出
 ```
+
+注意自查命令必须匹配完整的 PEM 头（带五个短横）。只搜 `BEGIN PRIVATE KEY`
+会命中本文件和 CI 配置里作为命令出现的同名字符串，造成误报。
 
 ## 行为准则
 

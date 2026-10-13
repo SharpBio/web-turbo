@@ -69,8 +69,13 @@ jobs:
             console.log('CRX3 magic OK, size=' + buf.length + ' bytes');
           "
 
+      # 注意：必须匹配完整 PEM 头（带五个短横）。若只搜 "BEGIN PRIVATE KEY"，
+      # 会命中本文件与 CONTRIBUTING.md 里作为命令/文档出现的同名字符串，造成误报。
       - name: Secret scan (must be empty)
         run: |
-          ! grep -rIl --exclude-dir=.git --exclude-dir=dist \
-            -e "BEGIN RSA PRIVATE KEY" -e "BEGIN PRIVATE KEY" . \
-            || { echo "::error::Private key material found in tracked files"; exit 1; }
+          if grep -rIl --exclude-dir=.git --exclude-dir=dist \
+               -e "-----BEGIN [A-Z ]*PRIVATE KEY-----" . ; then
+            echo "::error::Private key material found in tracked files"
+            exit 1
+          fi
+          echo "Secret scan OK"
