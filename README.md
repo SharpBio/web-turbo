@@ -4,6 +4,7 @@
 
 **给整个网页加速的浏览器扩展 —— CSS 动画 / JS 时间轴 / 视频音频 / 页面定时器，0.1x ~ 16x 自由调节**
 
+[![CI](https://github.com/SharpBio/web-turbo/actions/workflows/ci.yml/badge.svg)](https://github.com/SharpBio/web-turbo/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-brightgreen.svg)](manifest.json)
 [![Chrome 88+](https://img.shields.io/badge/Chrome-88%2B-orange.svg)](#兼容性)
